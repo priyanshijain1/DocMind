@@ -25,7 +25,9 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 def create_access_token(user_id: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    return jwt.encode({"sub": user_id, "exp": expire}, settings.jwt_secret, algorithm=ALGORITHM)
+    return jwt.encode(
+        {"sub": user_id, "exp": expire}, settings.jwt_secret, algorithm=ALGORITHM
+    )
 
 
 def decode_access_token(token: str) -> str | None:
@@ -58,7 +60,9 @@ async def get_current_user(
 async def _get_or_create_anonymous(db: AsyncSession):
     from core.models import User
 
-    result = await db.execute(select(User).where(User.email == "anonymous@docmind.local"))
+    result = await db.execute(
+        select(User).where(User.email == "anonymous@docmind.local")
+    )
     user = result.scalar_one_or_none()
     if not user:
         user = User(id="anonymous", email="anonymous@docmind.local", password_hash="")

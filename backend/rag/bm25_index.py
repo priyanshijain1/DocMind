@@ -25,7 +25,9 @@ def search_bm25(query: str, user_id: str, top_k: int = 10) -> list[dict]:
     if not _bm25 or not _chunk_store:
         return []
 
-    user_chunks = [(i, c) for i, c in enumerate(_chunk_store) if c.get("user_id") == user_id]
+    user_chunks = [
+        (i, c) for i, c in enumerate(_chunk_store) if c.get("user_id") == user_id
+    ]
     if not user_chunks:
         return []
 

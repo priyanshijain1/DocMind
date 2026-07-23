@@ -1,5 +1,10 @@
 from ragas import evaluate
-from ragas.metrics import faithfulness, answer_relevancy, context_precision, context_recall
+from ragas.metrics import (
+    faithfulness,
+    answer_relevancy,
+    context_precision,
+    context_recall,
+)
 from datasets import Dataset
 
 from rag.retrieval import hybrid_search
@@ -21,12 +26,14 @@ def build_qa_pairs(test_data: list[dict], user_id: str) -> list[dict]:
         response = llm.invoke(messages)
         answer = response.content
 
-        results.append({
-            "question": question,
-            "answer": answer,
-            "contexts": context_texts,
-            "ground_truth": ground_truth,
-        })
+        results.append(
+            {
+                "question": question,
+                "answer": answer,
+                "contexts": context_texts,
+                "ground_truth": ground_truth,
+            }
+        )
 
     return results
 

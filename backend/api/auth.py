@@ -4,7 +4,12 @@ from sqlalchemy import select
 
 from core.database import get_db
 from core.models import User
-from core.security import hash_password, verify_password, create_access_token, get_current_user
+from core.security import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    get_current_user,
+)
 from models.schemas import UserCreate, UserResponse, TokenResponse
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])

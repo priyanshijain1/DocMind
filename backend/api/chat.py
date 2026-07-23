@@ -23,7 +23,9 @@ async def chat(
     user: User = Depends(get_current_user),
 ):
     if req.session_id:
-        result = await db.execute(select(ChatSession).where(ChatSession.id == req.session_id))
+        result = await db.execute(
+            select(ChatSession).where(ChatSession.id == req.session_id)
+        )
         session = result.scalar_one_or_none()
     else:
         session = ChatSession(user_id=user.id, title=req.question[:80])
@@ -35,11 +37,15 @@ async def chat(
     db.add(user_msg)
     await db.commit()
 
-    sources = hybrid_search(req.question, user_id=user.id, top_k=settings.retrieval_top_k)
+    sources = hybrid_search(
+        req.question, user_id=user.id, top_k=settings.retrieval_top_k
+    )
 
     if not sources:
         answer = "I couldn't find this in the uploaded documents."
-        assistant_msg = Message(session_id=session.id, role="assistant", content=answer, sources="[]")
+        assistant_msg = Message(
+            session_id=session.id, role="assistant", content=answer, sources="[]"
+        )
         db.add(assistant_msg)
         await db.commit()
         return {"answer": answer, "sources": [], "session_id": session.id}
@@ -56,7 +62,12 @@ async def chat(
                 yield f"data: {json.dumps({'token': chunk.content})}\n\n"
 
         sources_json = json.dumps(sources)
-        assistant_msg = Message(session_id=session.id, role="assistant", content=full_answer, sources=sources_json)
+        assistant_msg = Message(
+            session_id=session.id,
+            role="assistant",
+            content=full_answer,
+            sources=sources_json,
+        )
         db.add(assistant_msg)
         await db.commit()
 

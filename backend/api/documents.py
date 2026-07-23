@@ -10,7 +10,12 @@ from core.database import get_db
 from core.models import Document, User
 from core.security import get_current_user
 from rag.chunking import extract_text, chunk_pages
-from rag.vectorstore import ensure_collection, embed_chunks, upsert_chunks, delete_doc_vectors
+from rag.vectorstore import (
+    ensure_collection,
+    embed_chunks,
+    upsert_chunks,
+    delete_doc_vectors,
+)
 from rag.bm25_index import index_chunks
 
 router = APIRouter(prefix="/api/documents", tags=["documents"])
@@ -25,11 +30,18 @@ async def list_documents(
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
-        select(Document).where(Document.user_id == user.id).order_by(Document.created_at.desc())
+        select(Document)
+        .where(Document.user_id == user.id)
+        .order_by(Document.created_at.desc())
     )
     docs = result.scalars().all()
     return [
-        {"id": d.id, "filename": d.filename, "num_pages": d.num_pages, "num_chunks": d.num_chunks}
+        {
+            "id": d.id,
+            "filename": d.filename,
+            "num_pages": d.num_pages,
+            "num_chunks": d.num_chunks,
+        }
         for d in docs
     ]
 

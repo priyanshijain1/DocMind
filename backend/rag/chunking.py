@@ -11,7 +11,9 @@ def extract_text(pdf_path: str) -> list[dict]:
     return pages
 
 
-def chunk_pages(pages: list[dict], chunk_size: int = 500, overlap: int = 50) -> list[dict]:
+def chunk_pages(
+    pages: list[dict], chunk_size: int = 500, overlap: int = 50
+) -> list[dict]:
     chunks = []
     for page in pages:
         words = page["text"].split()

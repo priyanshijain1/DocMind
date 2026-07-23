@@ -24,7 +24,9 @@ def embed_chunks(chunks: list[dict]) -> list[list[float]]:
     return embedding_model.encode(texts).tolist()
 
 
-def upsert_chunks(doc_id: str, user_id: str, chunks: list[dict], embeddings: list[list[float]]):
+def upsert_chunks(
+    doc_id: str, user_id: str, chunks: list[dict], embeddings: list[list[float]]
+):
     points = []
     for i, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
         points.append(
@@ -66,7 +68,9 @@ def search(query: str, user_id: str, top_k: int = 10) -> list[dict]:
 def delete_doc_vectors(doc_id: str):
     client.delete(
         collection_name=COLLECTION,
-        points_selector={"filter": {"must": [{"key": "doc_id", "match": {"value": doc_id}}]}},
+        points_selector={
+            "filter": {"must": [{"key": "doc_id", "match": {"value": doc_id}}]}
+        },
     )
 
 
