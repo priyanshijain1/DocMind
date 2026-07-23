@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     chunk_size: int = 500
     chunk_overlap: int = 50
     retrieval_top_k: int = 20
-    rerank_top_n: int = 5
+    rerank_top_n: int = 3
 
     class Config:
         env_file = "../.env"
