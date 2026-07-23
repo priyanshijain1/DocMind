@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import settings
 from core.database import get_db
-from core.models import Document
+from core.models import Document, User
+from core.security import get_current_user
 from rag.chunking import extract_text, chunk_pages
 from rag.vectorstore import ensure_collection, embed_chunks, upsert_chunks
 from rag.bm25_index import index_chunks
@@ -18,7 +19,11 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
 @router.post("/upload")
-async def upload_pdf(file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
+async def upload_pdf(
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed")
 
@@ -39,14 +44,14 @@ async def upload_pdf(file: UploadFile = File(...), db: AsyncSession = Depends(ge
 
     ensure_collection()
     embeddings = embed_chunks(chunks)
-    upsert_chunks(doc_id, "anonymous", chunks, embeddings)
+    upsert_chunks(doc_id, user.id, chunks, embeddings)
 
     chunks_with_doc = [{**c, "doc_id": doc_id} for c in chunks]
     index_chunks(chunks_with_doc)
 
     doc = Document(
         id=doc_id,
-        user_id="anonymous",
+        user_id=user.id,
         filename=file.filename,
         num_pages=len(pages),
         num_chunks=len(chunks),
