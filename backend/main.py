@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from core.config import settings
 from core.database import init_db
 from api.documents import router as documents_router
+from api.chat import router as chat_router
 
 app = FastAPI(title=settings.app_name, debug=settings.debug)
 
@@ -16,6 +17,7 @@ app.add_middleware(
 )
 
 app.include_router(documents_router)
+app.include_router(chat_router)
 
 
 @app.on_event("startup")
