@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from fastapi import Depends, HTTPException, Header
+from fastapi import Depends, Header
 from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy import select

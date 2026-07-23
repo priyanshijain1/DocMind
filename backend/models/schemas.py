@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 def utcnow():
