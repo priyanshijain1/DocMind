@@ -1,5 +1,6 @@
 from rag.vectorstore import search as search_vector
 from rag.bm25_index import search_bm25
+from rag.reranker import rerank
 
 
 def reciprocal_rank_fusion(lists: list[list[dict]], k: int = 60) -> list[dict]:
@@ -16,7 +17,7 @@ def reciprocal_rank_fusion(lists: list[list[dict]], k: int = 60) -> list[dict]:
     return [{**doc_map[key], "score": score} for key, score in ranked]
 
 
-def hybrid_search(query: str, user_id: str, top_k: int = 10) -> list[dict]:
+def hybrid_search(query: str, user_id: str, top_k: int = 10, top_n: int = 5) -> list[dict]:
     vector_results = search_vector(query, user_id, top_k=top_k)
     bm25_results = search_bm25(query, top_k=top_k)
 
@@ -24,8 +25,10 @@ def hybrid_search(query: str, user_id: str, top_k: int = 10) -> list[dict]:
         return []
 
     if not vector_results:
-        return bm25_results[:top_k]
-    if not bm25_results:
-        return vector_results[:top_k]
+        candidates = bm25_results[:top_k]
+    elif not bm25_results:
+        candidates = vector_results[:top_k]
+    else:
+        candidates = reciprocal_rank_fusion([vector_results, bm25_results])[:top_k]
 
-    return reciprocal_rank_fusion([vector_results, bm25_results])[:top_k]
+    return rerank(query, candidates, top_n=top_n)
