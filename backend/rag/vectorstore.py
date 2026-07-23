@@ -61,3 +61,10 @@ def search(query: str, user_id: str, top_k: int = 10) -> list[dict]:
         }
         for r in results
     ]
+
+
+def delete_doc_vectors(doc_id: str):
+    client.delete(
+        collection_name=COLLECTION,
+        points_selector={"filter": {"must": [{"key": "doc_id", "match": {"value": doc_id}}]}},
+    )

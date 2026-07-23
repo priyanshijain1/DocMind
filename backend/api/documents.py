@@ -3,19 +3,35 @@ import uuid
 
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 from core.config import settings
 from core.database import get_db
 from core.models import Document, User
 from core.security import get_current_user
 from rag.chunking import extract_text, chunk_pages
-from rag.vectorstore import ensure_collection, embed_chunks, upsert_chunks
+from rag.vectorstore import ensure_collection, embed_chunks, upsert_chunks, delete_doc_vectors
 from rag.bm25_index import index_chunks
 
 router = APIRouter(prefix="/api/documents", tags=["documents"])
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+@router.get("")
+async def list_documents(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Document).where(Document.user_id == user.id).order_by(Document.created_at.desc())
+    )
+    docs = result.scalars().all()
+    return [
+        {"id": d.id, "filename": d.filename, "num_pages": d.num_pages, "num_chunks": d.num_chunks}
+        for d in docs
+    ]
 
 
 @router.post("/upload")
@@ -46,7 +62,7 @@ async def upload_pdf(
     embeddings = embed_chunks(chunks)
     upsert_chunks(doc_id, user.id, chunks, embeddings)
 
-    chunks_with_doc = [{**c, "doc_id": doc_id} for c in chunks]
+    chunks_with_doc = [{**c, "doc_id": doc_id, "user_id": user.id} for c in chunks]
     index_chunks(chunks_with_doc)
 
     doc = Document(
@@ -65,3 +81,26 @@ async def upload_pdf(
         "num_pages": len(pages),
         "num_chunks": len(chunks),
     }
+
+
+@router.delete("/{doc_id}")
+async def delete_document(
+    doc_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Document).where(Document.id == doc_id, Document.user_id == user.id)
+    )
+    doc = result.scalar_one_or_none()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    delete_doc_vectors(doc_id)
+    pdf_path = os.path.join(UPLOAD_DIR, f"{doc_id}.pdf")
+    if os.path.exists(pdf_path):
+        os.remove(pdf_path)
+
+    await db.delete(doc)
+    await db.commit()
+    return {"detail": "Deleted"}

@@ -19,7 +19,7 @@ def reciprocal_rank_fusion(lists: list[list[dict]], k: int = 60) -> list[dict]:
 
 def hybrid_search(query: str, user_id: str, top_k: int = 10, top_n: int = 5) -> list[dict]:
     vector_results = search_vector(query, user_id, top_k=top_k)
-    bm25_results = search_bm25(query, top_k=top_k)
+    bm25_results = search_bm25(query, user_id=user_id, top_k=top_k)
 
     if not vector_results and not bm25_results:
         return []
