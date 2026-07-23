@@ -1,0 +1,31 @@
+from rag.vectorstore import search as search_vector
+from rag.bm25_index import search_bm25
+
+
+def reciprocal_rank_fusion(lists: list[list[dict]], k: int = 60) -> list[dict]:
+    scores: dict[str, float] = {}
+    doc_map: dict[str, dict] = {}
+
+    for ranked_list in lists:
+        for rank, doc in enumerate(ranked_list):
+            key = f"{doc['doc_id']}:{doc['page']}:{doc['chunk_index'] if 'chunk_index' in doc else doc['text'][:50]}"
+            scores[key] = scores.get(key, 0) + 1 / (k + rank + 1)
+            doc_map[key] = doc
+
+    ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    return [{**doc_map[key], "score": score} for key, score in ranked]
+
+
+def hybrid_search(query: str, user_id: str, top_k: int = 10) -> list[dict]:
+    vector_results = search_vector(query, user_id, top_k=top_k)
+    bm25_results = search_bm25(query, top_k=top_k)
+
+    if not vector_results and not bm25_results:
+        return []
+
+    if not vector_results:
+        return bm25_results[:top_k]
+    if not bm25_results:
+        return vector_results[:top_k]
+
+    return reciprocal_rank_fusion([vector_results, bm25_results])[:top_k]

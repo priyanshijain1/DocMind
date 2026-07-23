@@ -9,6 +9,7 @@ from core.database import get_db
 from core.models import Document
 from rag.chunking import extract_text, chunk_pages
 from rag.vectorstore import ensure_collection, embed_chunks, upsert_chunks
+from rag.bm25_index import index_chunks
 
 router = APIRouter(prefix="/api/documents", tags=["documents"])
 
@@ -39,6 +40,9 @@ async def upload_pdf(file: UploadFile = File(...), db: AsyncSession = Depends(ge
     ensure_collection()
     embeddings = embed_chunks(chunks)
     upsert_chunks(doc_id, "anonymous", chunks, embeddings)
+
+    chunks_with_doc = [{**c, "doc_id": doc_id} for c in chunks]
+    index_chunks(chunks_with_doc)
 
     doc = Document(
         id=doc_id,

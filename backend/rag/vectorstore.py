@@ -37,6 +37,7 @@ def upsert_chunks(doc_id: str, user_id: str, chunks: list[dict], embeddings: lis
                     "page": chunk["page"],
                     "chunk_index": chunk["chunk_index"],
                     "text": chunk["text"],
+                    "source": "vector",
                 },
             )
         )
