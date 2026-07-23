@@ -58,3 +58,7 @@ class Source(BaseModel):
     page: int
     snippet: str
     score: float
+
+
+class EvalRequest(BaseModel):
+    test_data: list[dict]
