@@ -8,6 +8,7 @@ from core.config import settings
 from core.database import get_db
 from core.models import Document
 from rag.chunking import extract_text, chunk_pages
+from rag.vectorstore import ensure_collection, embed_chunks, upsert_chunks
 
 router = APIRouter(prefix="/api/documents", tags=["documents"])
 
@@ -34,6 +35,10 @@ async def upload_pdf(file: UploadFile = File(...), db: AsyncSession = Depends(ge
         raise HTTPException(status_code=400, detail="Could not extract text from PDF")
 
     chunks = chunk_pages(pages, settings.chunk_size, settings.chunk_overlap)
+
+    ensure_collection()
+    embeddings = embed_chunks(chunks)
+    upsert_chunks(doc_id, "anonymous", chunks, embeddings)
 
     doc = Document(
         id=doc_id,
