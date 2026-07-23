@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 
 from core.config import settings
 from core.database import init_db
@@ -29,6 +30,12 @@ app.include_router(sessions_router)
 @app.on_event("startup")
 async def startup():
     await init_db()
+    from rag.vectorstore import load_all_chunks
+    from rag.bm25_index import load_chunks
+
+    chunks = load_all_chunks()
+    load_chunks(chunks)
+    logger.info(f"BM25 index rebuilt: {len(chunks)} chunks loaded")
 
 
 @app.get("/health")

@@ -1,30 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from core.database import get_db
 from core.models import User
-from core.security import hash_password, verify_password, create_access_token, decode_access_token
+from core.security import hash_password, verify_password, create_access_token, get_current_user
 from models.schemas import UserCreate, UserResponse, TokenResponse
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
-
-
-async def get_current_user(
-    authorization: str = Header(None),
-    db: AsyncSession = Depends(get_db),
-) -> User:
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    token = authorization.split(" ")[1]
-    user_id = decode_access_token(token)
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    result = await db.execute(select(User).where(User.id == user_id))
-    user = result.scalar_one_or_none()
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
-    return user
 
 
 @router.post("/register", response_model=UserResponse)

@@ -4,6 +4,16 @@ _chunk_store: list[dict] = []
 _bm25: BM25Okapi | None = None
 
 
+def load_chunks(chunks: list[dict]):
+    global _chunk_store, _bm25
+    _chunk_store = chunks
+    if _chunk_store:
+        tokenized = [c["text"].lower().split() for c in _chunk_store]
+        _bm25 = BM25Okapi(tokenized)
+    else:
+        _bm25 = None
+
+
 def index_chunks(chunks: list[dict]):
     global _chunk_store, _bm25
     _chunk_store.extend(chunks)

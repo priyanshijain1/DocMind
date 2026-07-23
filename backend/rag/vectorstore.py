@@ -68,3 +68,23 @@ def delete_doc_vectors(doc_id: str):
         collection_name=COLLECTION,
         points_selector={"filter": {"must": [{"key": "doc_id", "match": {"value": doc_id}}]}},
     )
+
+
+def load_all_chunks() -> list[dict]:
+    try:
+        collections = [c.name for c in client.get_collections().collections]
+        if COLLECTION not in collections:
+            return []
+        points, _ = client.scroll(collection_name=COLLECTION, limit=10000)
+        return [
+            {
+                "text": p.payload["text"],
+                "page": p.payload["page"],
+                "doc_id": p.payload["doc_id"],
+                "user_id": p.payload["user_id"],
+                "chunk_index": p.payload["chunk_index"],
+            }
+            for p in points
+        ]
+    except Exception:
+        return []

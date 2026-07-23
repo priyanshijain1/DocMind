@@ -164,7 +164,3 @@ curl -X POST http://localhost:8000/api/eval \
 ```
 
 Returns: faithfulness, answer_relevancy, context_precision, context_recall.
-
-## License
-
-MIT

@@ -1,3 +1,5 @@
+"use client";
+
 import Chat from "@/components/Chat";
 import FileUpload from "@/components/FileUpload";
 

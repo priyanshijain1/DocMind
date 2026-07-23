@@ -31,4 +31,7 @@ def hybrid_search(query: str, user_id: str, top_k: int = 10, top_n: int = 5) -> 
     else:
         candidates = reciprocal_rank_fusion([vector_results, bm25_results])[:top_k]
 
-    return rerank(query, candidates, top_n=top_n)
+    results = rerank(query, candidates, top_n=top_n)
+    for r in results:
+        r["score"] = round(r.pop("rerank_score", r.get("score", 0)), 4)
+    return results
