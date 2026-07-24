@@ -4,6 +4,11 @@ Chat with your PDFs using Retrieval-Augmented Generation.
 
 Upload documents, ask questions, get grounded answers with citations — powered by hybrid search, cross-encoder reranking, and Llama 3.3 70B via Groq.
 
+## Demo
+
+<!-- [![DocMind Demo](https://img.shields.io/badge/▶_Watch_Demo-red?style=for-the-badge)](https://youtu.be/uajxMHhGiAQ) -->
+https://youtu.be/uajxMHhGiAQ
+
 ## Architecture
 
 ```
