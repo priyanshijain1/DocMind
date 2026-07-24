@@ -1,1 +1,34 @@
 @import "tailwindcss";
+
+:root {
+  --pistachio-50: #f0faf0;
+  --pistachio-100: #E8F5E9;
+  --pistachio-200: #C8E6C9;
+  --pistachio-300: #A5D6A7;
+  --pistachio-400: #81C784;
+  --pistachio-500: #66BB6A;
+  --pistachio-600: #43A047;
+  --pistachio-700: #388E3C;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c4c4c4 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #c4c4c4;
+  border-radius: 3px;
+}
