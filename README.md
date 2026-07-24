@@ -6,8 +6,7 @@ Upload documents, ask questions, get grounded answers with citations — powered
 
 ## Demo
 
-<!-- [![DocMind Demo](https://img.shields.io/badge/▶_Watch_Demo-red?style=for-the-badge)](https://youtu.be/uajxMHhGiAQ) -->
-https://youtu.be/uajxMHhGiAQ
+[![DocMind Demo](docs/preview.png))](https://youtu.be/uajxMHhGiAQ)
 
 ## Architecture
 
