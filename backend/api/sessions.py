@@ -1,11 +1,11 @@
 import json
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
-from core.models import User, ChatSession, Message
+from core.models import ChatSession, Message, User
 from core.security import get_current_user
 
 router = APIRouter(prefix="/api/sessions", tags=["sessions"])

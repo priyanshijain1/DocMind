@@ -1,14 +1,14 @@
+from datasets import Dataset
 from ragas import evaluate
 from ragas.metrics import (
-    faithfulness,
     answer_relevancy,
     context_precision,
     context_recall,
+    faithfulness,
 )
-from datasets import Dataset
 
+from rag.llm import build_messages, get_llm
 from rag.retrieval import hybrid_search
-from rag.llm import get_llm, build_messages
 
 
 def build_qa_pairs(test_data: list[dict], user_id: str) -> list[dict]:

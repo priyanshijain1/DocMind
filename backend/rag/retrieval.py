@@ -1,6 +1,6 @@
-from rag.vectorstore import search as search_vector
 from rag.bm25_index import search_bm25
 from rag.reranker import rerank
+from rag.vectorstore import search as search_vector
 
 
 def reciprocal_rank_fusion(lists: list[list[dict]], k: int = 60) -> list[dict]:

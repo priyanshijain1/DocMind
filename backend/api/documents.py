@@ -1,22 +1,22 @@
 import os
 import uuid
 
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import settings
 from core.database import get_db
 from core.models import Document, User
 from core.security import get_current_user
-from rag.chunking import extract_text, chunk_pages
-from rag.vectorstore import (
-    ensure_collection,
-    embed_chunks,
-    upsert_chunks,
-    delete_doc_vectors,
-)
 from rag.bm25_index import index_chunks
+from rag.chunking import chunk_pages, extract_text
+from rag.vectorstore import (
+    delete_doc_vectors,
+    embed_chunks,
+    ensure_collection,
+    upsert_chunks,
+)
 
 router = APIRouter(prefix="/api/documents", tags=["documents"])
 

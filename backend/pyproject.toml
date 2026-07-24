@@ -1,0 +1,18 @@
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "ASYNC", "BLE", "PLW"]
+ignore = [
+    "B008",    # FastAPI Depends() in function args
+    "B905",    # zip() without strict= — overkill for this codebase
+    "E501",    # line too long — triple-quoted strings in llm.py are fine
+    "ASYNC230",  # blocking file open — acceptable for small PDF writes
+    "ASYNC240",  # os.path in async — same reason
+    "BLE001",  # blind except — used intentionally for JWT decode + Qdrant scroll
+    "PLW0602",  # global without assignment — false positive on _chunk_store.extend()
+    "PLW0603",  # global statement — needed for BM25/reranker module-level state
+]
+
+[tool.ruff.lint.per-file-ignores]
+"rag/evaluation.py" = ["F401"]

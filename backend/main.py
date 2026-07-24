@@ -2,13 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
+from api.auth import router as auth_router
+from api.chat import router as chat_router
+from api.documents import router as documents_router
+from api.eval import router as eval_router
+from api.sessions import router as sessions_router
 from core.config import settings
 from core.database import init_db
-from api.documents import router as documents_router
-from api.chat import router as chat_router
-from api.eval import router as eval_router
-from api.auth import router as auth_router
-from api.sessions import router as sessions_router
 
 app = FastAPI(title=settings.app_name, debug=settings.debug)
 
@@ -30,8 +30,8 @@ app.include_router(sessions_router)
 @app.on_event("startup")
 async def startup():
     await init_db()
-    from rag.vectorstore import load_all_chunks
     from rag.bm25_index import load_chunks
+    from rag.vectorstore import load_all_chunks
 
     chunks = load_all_chunks()
     load_chunks(chunks)

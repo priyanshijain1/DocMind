@@ -2,16 +2,16 @@ import json
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import settings
 from core.database import get_db
-from core.models import User, ChatSession, Message
+from core.models import ChatSession, Message, User
 from core.security import get_current_user
 from models.schemas import ChatRequest
+from rag.llm import build_messages, get_llm
 from rag.retrieval import hybrid_search
-from rag.llm import get_llm, build_messages
 
 router = APIRouter(prefix="/api", tags=["chat"])
 
